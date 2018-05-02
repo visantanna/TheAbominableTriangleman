@@ -1,139 +1,232 @@
+package Problem979;
+
 import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main {
-	public static void main(String[] args) {
-		List<Ponto> trianguloMagico = new ArrayList<Ponto>();
-		List<Ponto> listaDePontos = new ArrayList<Ponto>();
-		Scanner sc = new Scanner(System.in);
-		while (sc.hasNext()){
-			for(int i = 0 ;i < 3; i ++ ){
-				int x = sc.nextInt();
-				int y = sc.nextInt();
-				trianguloMagico.add(new Ponto(x,y));
-			}
-			int qtdPontos = sc.nextInt();
-			for(int j = 0 ; j < qtdPontos; j++){
-				int x = sc.nextInt();
-				int y = sc.nextInt();
-				listaDePontos.add(new Ponto(x,y));
-			}
-			executar(trianguloMagico , listaDePontos);
-			trianguloMagico.clear();
-			listaDePontos.clear();
-			if(sc.hasNext())
-				sc.nextLine();
-		}
-
-	}
-	private static void executar(List<Ponto> trianguloMagico, List<Ponto> listaDePontos) {
-		double distXY = trianguloMagico.get(0).distancia(trianguloMagico.get(1));
-		double distXZ = trianguloMagico.get(0).distancia(trianguloMagico.get(2));
-		double distYZ = trianguloMagico.get(1).distancia(trianguloMagico.get(2));
-		List<Ponto> Resultado = new ArrayList<Ponto>();
+public class Main
+{
+	static Scanner scanner;
+	
+	public static void main ( String[] args )
+	{
+		scanner = new Scanner ( System.in );
 		
-		for(int i = 0 ; i < listaDePontos.size() ; i ++){
-			List<Ponto> listaDistXY = new ArrayList<Ponto>();
-			List<Ponto> listaDistXZ = new ArrayList<Ponto>();
-			for(int j = 0; j < listaDePontos.size() ; j ++){
-				
-				Ponto ponto1 = listaDePontos.get(i);
-				Ponto ponto2 = listaDePontos.get(j);
-				
-				double distancia = ponto1.distancia(ponto2);
-				
-				int adicionado = 0;
-				if(distXY == distXZ){
-					if(distancia == distXY){
-						listaDistXY.add(ponto2);
-						listaDistXZ.add(ponto2);
-						adicionado =1;
-					}
-				}else if(distancia == distXY){
-					listaDistXY.add(ponto2);
-					adicionado =1;
-				}else if(distancia == distXZ){
-						listaDistXZ.add(ponto2);
-						adicionado =2;
-				}
-				Ponto pontoConfirmado = null;
-				
-				if(adicionado > 0){
-					if(adicionado == 1){
-						Ponto lastAdded = listaDistXY.get(listaDistXY.size()-1);
-						for(Ponto ponto : listaDistXZ){
-							if(lastAdded.distancia(ponto) == distYZ ){
-								pontoConfirmado = ponto;
-								break;
-							}
-						}
-					}else{
-						Ponto lastAdded = listaDistXZ.get(listaDistXZ.size()-1);
-						for(Ponto ponto : listaDistXY){
-							if(lastAdded.distancia(ponto) == distYZ ){
-								pontoConfirmado = ponto;
-								break;
-							}
-						}
-					}
-					if(pontoConfirmado != null){
-						Resultado.add(ponto1);
-						Resultado.add(ponto2);
-						Resultado.add(pontoConfirmado);
-						PontoComparator comparador = new PontoComparator();
-						Resultado.sort(comparador);
-				
-						Resultado.forEach(ponto -> System.out.println(ponto.x() + " " +ponto.y()));
-						System.out.println();
-						return;
-					}
-				}
+		while ( scanner.hasNext () )
+		{
+			final List<Point> magicGoldTriangle = new ArrayList<Point> ();
+			final List<Point> planeWorldPointList = new ArrayList<Point> ();
+			
+			readInput ( magicGoldTriangle, planeWorldPointList );
+			final List<Point> newMagicGoldTriangle = findNewMagicGoldTriangle ( magicGoldTriangle, planeWorldPointList );
+			printOutput ( newMagicGoldTriangle );
+			
+			if ( scanner.hasNext () )
+			{
+				scanner.nextLine ();
 			}
 		}
 	}
-}
-class Ponto implements Comparable<Ponto>{
-	private int x;
-	private int y;
-	Ponto(int x , int y){
-		this.x = x;
-		this.y = y;
-	} 
-	public int x(){
-		return x;
+	
+	private static void readInput ( final List<Point> magicGoldTriangle, final List<Point> planeWorldPointList )
+	{
+		for ( int originalCoordinate = 0; originalCoordinate < 3; originalCoordinate++ )
+		{
+			int x = scanner.nextInt ();
+			int y = scanner.nextInt ();
+			
+			magicGoldTriangle.add ( new Point ( x, y ) );
+		}
+		
+		int planeWorldPointNumber = scanner.nextInt ();
+		for ( int planeWorldPoint = 0; planeWorldPoint < planeWorldPointNumber; planeWorldPoint++ )
+		{
+			int x = scanner.nextInt ();
+			int y = scanner.nextInt ();
+			
+			planeWorldPointList.add ( new Point ( x, y ) );
+		}
 	}
-	public int y(){
-		return y;
+
+	private static void printOutput ( final List<Point> newMagicGoldTriangle )
+	{
+		newMagicGoldTriangle.forEach ( ponto -> System.out.println ( ponto.getX () + " " + ponto.getY () ) );
+		System.out.println ();
 	}
-	public double distancia(Ponto ponto2){
-		int distX = Math.abs(x - ponto2.x());
-		int distY = Math.abs(y - ponto2.y());
-		double distPontos = Math.sqrt(distX*distX + distY*distY);
-		return distPontos;
+	
+	private static List<Point> findNewMagicGoldTriangle ( final List<Point> magicGoldTriangle,final List<Point> planeWorldPointList )
+	{
+		final double distanceOfXY = magicGoldTriangle.get ( 0 ).distanceTo ( magicGoldTriangle.get ( 1 ) );
+		final double distanceOfXZ = magicGoldTriangle.get ( 0 ).distanceTo ( magicGoldTriangle.get ( 2 ) );
+		final double distanceOfYZ = magicGoldTriangle.get ( 1 ).distanceTo ( magicGoldTriangle.get ( 2 ) );
+		
+		final List<Point> newMagicGoldTriangle = new ArrayList<Point> ();
+		for ( int pointIndex = 0; pointIndex < planeWorldPointList.size (); pointIndex++ )
+		{
+			final List<Point> listOfDistancesXY = new ArrayList<Point> ();
+			final List<Point> listOfDistancesXZ = new ArrayList<Point> ();
+			
+			for ( int pointToReferenceIndex = 0; pointToReferenceIndex < planeWorldPointList.size (); pointToReferenceIndex++ )
+			{
+				final Point point = planeWorldPointList.get ( pointIndex );
+				final Point pointToReference = planeWorldPointList.get ( pointToReferenceIndex );
+
+				final double distanceBetweenPoints = point.distanceTo ( pointToReference );
+				final int added = getAddedValue ( distanceOfXY, distanceOfXZ, distanceBetweenPoints,listOfDistancesXY, listOfDistancesXZ, pointToReference );
+				
+				if ( added == 0 )
+				{
+					continue;
+				}
+				
+				Point confirmedPoint = getConfirmedPoint ( added, listOfDistancesXY, listOfDistancesXZ, distanceOfYZ );
+				
+				if ( confirmedPoint != null )
+				{
+					newMagicGoldTriangle.add ( point );
+					newMagicGoldTriangle.add ( pointToReference );
+					newMagicGoldTriangle.add ( confirmedPoint );
+					
+					newMagicGoldTriangle.sort ( new PointComparator() );
+					
+					return newMagicGoldTriangle;
+				}
+			}
+		}
+		
+		throw new IllegalArgumentException();
 	}
-	@Override
-	public int compareTo(Ponto ponto) {
-		if(x > ponto.x()){
-			return 1;
-		}else if(x < ponto.x()){
-			return -1;
-		}else if(x == ponto.x()){
-			if(y >= ponto.y()){
+
+	private static int getAddedValue ( final double distanceOfXY, final double distanceOfXZ, final double distanceBetweenPoints,
+			final List<Point> listOfDistancesXY, final List<Point> listOfDistancesXZ, final Point pointToReference )
+	{
+		if ( distanceOfXY == distanceOfXZ )
+		{
+			if ( distanceBetweenPoints == distanceOfXY )
+			{
+				listOfDistancesXY.add ( pointToReference );
+				listOfDistancesXZ.add ( pointToReference );
+				
 				return 1;
-			}else{
-				return -1;
 			}
 		}
+		else
+		{
+			if ( distanceBetweenPoints == distanceOfXY )
+			{
+				listOfDistancesXY.add ( pointToReference );
+				
+				return 1;
+			}
+			
+			if ( distanceBetweenPoints == distanceOfXZ )
+			{
+				listOfDistancesXZ.add ( pointToReference );
+				
+				return 2;
+			}
+		}
+		
 		return 0;
 	}
-}
-class PontoComparator implements Comparator<Ponto>{
 
-	@Override
-	public int compare(Ponto o1, Ponto o2) {
-		return o1.compareTo(o2);
+	private static Point getConfirmedPoint ( final int added, final List<Point> listOfDistancesXY, final List<Point> listOfDistancesXZ,
+			final double distanceOfYZ )
+	{
+		if ( added == 1 )
+		{
+			final Point lastAdded = listOfDistancesXY.get ( listOfDistancesXY.size () - 1 );
+			for ( Point pointDistXY : listOfDistancesXZ )
+			{
+				if ( lastAdded.distanceTo ( pointDistXY ) == distanceOfYZ )
+				{
+					return pointDistXY;
+				}
+			}
+			
+			return null;
+		}
+		
+		if ( added == 2)
+		{
+			final Point lastAdded = listOfDistancesXZ.get ( listOfDistancesXZ.size () - 1 );
+			for ( Point pointDistXZ : listOfDistancesXY )
+			{
+				if ( lastAdded.distanceTo ( pointDistXZ ) == distanceOfYZ )
+				{
+					return pointDistXZ;
+				}
+			}
+			
+			return null;
+		}
+		
+		throw new IllegalArgumentException();
+	}
+}
+
+class Point implements Comparable<Point>
+{
+	private final int x;
+	private final int y;
+
+	public Point ( final int x, final int y )
+	{
+		this.x = x;
+		this.y = y;
 	}
 
+	public int getX ()
+	{
+		return x;
+	}
+
+	public int getY ()
+	{
+		return y;
+	}
+
+	public double distanceTo ( final Point otherPoint )
+	{
+		final int distanceOfX = Math.abs ( x - otherPoint.getX () );
+		final int distanceOfY = Math.abs ( y - otherPoint.getY () );
+		
+		return Math.sqrt ( ( distanceOfX * distanceOfX ) + ( distanceOfY * distanceOfY ) );
+	}
+
+	@Override
+	public int compareTo ( Point otherPoint )
+	{
+		if ( x > otherPoint.getX () )
+		{
+			return 1;
+		}
+		
+		if ( x < otherPoint.getX () )
+		{
+			return -1;
+		}
+		
+		if ( y >= otherPoint.getY () )
+		{
+			return 1;
+		}
+		
+		if ( y < otherPoint.getY () )
+		{
+			return -1;
+		}
+		
+		throw new IllegalArgumentException ();
+	}
+}
+
+class PointComparator implements Comparator<Point>
+{
+	@Override
+	public int compare ( Point pointOne, Point pointTwo )
+	{
+		return pointOne.compareTo ( pointTwo );
+	}
 }
