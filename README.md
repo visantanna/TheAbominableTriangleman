@@ -1,0 +1,1 @@
+Programa de desafio de programação no formato esperado pelo UVa Online Judge
