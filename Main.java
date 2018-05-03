@@ -51,7 +51,7 @@ public class Main
 
 	private static void printOutput ( final List<Point> newMagicGoldTriangle )
 	{
-		newMagicGoldTriangle.forEach ( ponto -> System.out.println ( ponto.getX () + " " + ponto.getY () ) );
+		newMagicGoldTriangle.forEach ( point -> System.out.println ( point.getX () + " " + point.getY () ) );
 		System.out.println ();
 	}
 	
@@ -73,7 +73,8 @@ public class Main
 				final Point pointToReference = planeWorldPointList.get ( pointToReferenceIndex );
 
 				final double distanceBetweenPoints = point.distanceTo ( pointToReference );
-				final int added = getAddedValue ( distanceOfXY, distanceOfXZ, distanceBetweenPoints,listOfDistancesXY, listOfDistancesXZ, pointToReference );
+				final int added = getAddedValue ( distanceOfXY, distanceOfXZ, distanceBetweenPoints,
+								  listOfDistancesXY, listOfDistancesXZ, pointToReference );
 				
 				if ( added == 0 )
 				{
@@ -131,8 +132,8 @@ public class Main
 		return 0;
 	}
 
-	private static Point getConfirmedPoint ( final int added, final List<Point> listOfDistancesXY, final List<Point> listOfDistancesXZ,
-			final double distanceOfYZ )
+	private static Point getConfirmedPoint ( final int added, final List<Point> listOfDistancesXY,
+						final List<Point> listOfDistancesXZ, final double distanceOfYZ )
 	{
 		if ( added == 1 )
 		{
